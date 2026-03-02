@@ -1,4 +1,4 @@
-[🇬🇧](docs/README.en.md)
+🇬🇧 [English](README.en.md)
 # 🚀 fast-installer
 
 **Paper & Spigot Automation Script**
