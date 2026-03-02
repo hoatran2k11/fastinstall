@@ -1,4 +1,4 @@
-🇻🇳 [Tiếng Việt](README.vi.md)
+🇻🇳 [Tiếng Việt](README.md)
 # 🚀 fast-installer
 
 **Paper & Spigot Automation Script**
