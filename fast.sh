@@ -2,6 +2,83 @@
 
 set -e
 
+edit_server_properties() {
+
+    if [ ! -f "server.properties" ]; then
+        echo "server.properties not found!"
+        exit 1
+    fi
+
+    cp server.properties server.properties.bak
+
+    get_val() {
+        grep "^$1=" server.properties | cut -d= -f2-
+    }
+
+    set_val() {
+        sed -i "s|^$1=.*|$1=$2|" server.properties
+    }
+
+    toggle_val() {
+        CURRENT=$(get_val "$1")
+        if [ "$CURRENT" == "true" ]; then
+            set_val "$1" "false"
+        else
+            set_val "$1" "true"
+        fi
+    }
+
+    while true; do
+        clear
+        echo "========= Quick Config ========="
+        echo "1) Server Port        : $(get_val server-port)"
+        echo "2) MOTD               : $(get_val motd)"
+        echo "3) RCON               : $(get_val enable-rcon)"
+        echo "4) RCON Port          : $(get_val rcon.port)"
+        echo "5) Max Players        : $(get_val max-players)"
+        echo "6) Online Mode        : $(get_val online-mode)"
+        echo "7) PvP                : $(get_val pvp)"
+        echo "8) Back"
+        echo "================================="
+        read -p "Select option: " opt
+
+        case $opt in
+            1)
+                read -p "New server-port: " v
+                set_val "server-port" "$v"
+                ;;
+            2)
+                read -p "New MOTD: " v
+                set_val "motd" "$v"
+                ;;
+            3)
+                toggle_val "enable-rcon"
+                ;;
+            4)
+                read -p "New RCON port: " v
+                set_val "rcon.port" "$v"
+                ;;
+            5)
+                read -p "New max-players: " v
+                set_val "max-players" "$v"
+                ;;
+            6)
+                toggle_val "online-mode"
+                ;;
+            7)
+                toggle_val "pvp"
+                ;;
+            8)
+                break
+                ;;
+            *)
+                echo "Invalid option."
+                sleep 1
+                ;;
+        esac
+    done
+}
+
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     OS_ID=$ID
@@ -296,83 +373,6 @@ java -Xms${MIN_RAM} -Xmx${MAX_RAM} ${EXTRA_FLAGS} -jar server.jar nogui
 EOF
 
 fi
-
-edit_server_properties() {
-
-    if [ ! -f "server.properties" ]; then
-        echo "server.properties not found!"
-        exit 1
-    fi
-
-    cp server.properties server.properties.bak
-
-    get_val() {
-        grep "^$1=" server.properties | cut -d= -f2-
-    }
-
-    set_val() {
-        sed -i "s|^$1=.*|$1=$2|" server.properties
-    }
-
-    toggle_val() {
-        CURRENT=$(get_val "$1")
-        if [ "$CURRENT" == "true" ]; then
-            set_val "$1" "false"
-        else
-            set_val "$1" "true"
-        fi
-    }
-
-    while true; do
-        clear
-        echo "========= Quick Config ========="
-        echo "1) Server Port        : $(get_val server-port)"
-        echo "2) MOTD               : $(get_val motd)"
-        echo "3) RCON               : $(get_val enable-rcon)"
-        echo "4) RCON Port          : $(get_val rcon.port)"
-        echo "5) Max Players        : $(get_val max-players)"
-        echo "6) Online Mode        : $(get_val online-mode)"
-        echo "7) PvP                : $(get_val pvp)"
-        echo "8) Back"
-        echo "================================="
-        read -p "Select option: " opt
-
-        case $opt in
-            1)
-                read -p "New server-port: " v
-                set_val "server-port" "$v"
-                ;;
-            2)
-                read -p "New MOTD: " v
-                set_val "motd" "$v"
-                ;;
-            3)
-                toggle_val "enable-rcon"
-                ;;
-            4)
-                read -p "New RCON port: " v
-                set_val "rcon.port" "$v"
-                ;;
-            5)
-                read -p "New max-players: " v
-                set_val "max-players" "$v"
-                ;;
-            6)
-                toggle_val "online-mode"
-                ;;
-            7)
-                toggle_val "pvp"
-                ;;
-            8)
-                break
-                ;;
-            *)
-                echo "Invalid option."
-                sleep 1
-                ;;
-        esac
-    done
-}
 
 chmod +x start.sh
 
